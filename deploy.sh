@@ -15,4 +15,7 @@ sudo apt-get install nginx
 # Set permission to html folder
 # chown ubuntu:ubuntu .
 cd /var/www/html
+
+# TODO: pull if exist, please
+sudo rm -Rf WebCloud
 sudo git clone https://github.com/CelesteBegassat/WebCloud.git
