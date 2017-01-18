@@ -8,9 +8,9 @@ set -e
 echo " ... apt-get update..."
 sudo apt-get update
 echo " ... apt-get upgrade..."
-sudo apt-get upgrade
+sudo apt-get upgrade -y
 echo " ... apt-get install nginx..."
-sudo apt-get install nginx
+sudo apt-get install nginx -y
 
 # Set permission to html folder
 # chown ubuntu:ubuntu .
