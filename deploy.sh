@@ -9,6 +9,7 @@ if [ "$1" = '' ]; then
         IP="35.157.32.132"
     fi
 else
+    # Mais on peut également le passer en argument quand on éxecute le script
     IP=$1
 fi
 
@@ -21,25 +22,31 @@ if [ "$2" = '' ]; then
         USER_SSH="ubuntu"
     fi
 else
+    # Mais on peut encore le passer en argument quand on éxecute le script
     USER_SSH=$2
 fi
-tail -n +28 "$0" | ssh $USER_SSH@$IP; exit;
+
+# tail -n +34 "deploy.sh" -> Lit ce même fichier à partir de la ligne 30
+# Puis l'envoie en pipe dans la connexion SSH
+# Et enfin quitte le script
+tail -n +34 "$0" | ssh $USER_SSH@$IP; exit;
 
 ### Commandes SSH ###
 
-# Prevent errors
+# Quitte le script si jamais une erreur survient !
 set -e
 
 # Message d'accueil
 echo "Vous êtes sur une machine $(uname)"
 
-# Send apt-get update, upgrade, install ngnix
+# Met à jour le système
 echo " ### apt-get update"
 sudo apt-get update > ~/latest-update.log
+# Installe les mises à jour
 echo " ### apt-get upgrade"
 sudo apt-get upgrade -y > ~/latest-upgrade.log
 
-# Installation du serveur web
+# Installation du serveur web (nginx)
 echo " ### apt-get install nginx"
 sudo apt-get install nginx  -y > /dev/null
 
@@ -51,8 +58,12 @@ sudo apt-get install git  -y > /dev/null
 sudo apt-get install php7.0 php-fpm -y > /dev/null
 
 # Mise en place de la configuration Nginx
+
+# Il faut obligatoirement créer le fichier en sudo pour
+#  y renvoyer un pipe d'echo par la suite
 sudo touch /etc/nginx/sites-available/webcloud
 
+# Pipe de la configuration de Nginx
 sudo echo "server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -75,7 +86,9 @@ sudo echo "server {
         deny all;
     }
 }" | sudo tee /etc/nginx/sites-available/webcloud > /dev/null
-# Activation de cette configuration
+# tee nous permet d'écrire le pipe reçu dans le fichier de configuration
+
+# Activation de cette configuration avec un symlink
 sudo ln -f /etc/nginx/sites-available/webcloud /etc/nginx/sites-enabled
 
 # On supprime la configuration par défaut si elle existe
@@ -100,6 +113,7 @@ else
     echo " ## Le projet n'a jamais été déployé pour le moment"
     echo " ## Mise en place du projet ... "
     # Sinon on donne les bons droits dans le dossier /var/www
+    # $USER est ici l'utilisateur courant avec lequel nous serons connecté en SSH
     sudo chown -Rf $USER:$USER .
     # On supprime le dossier html
     rm -Rf html
@@ -107,3 +121,4 @@ else
     git clone https://github.com/CelesteBegassat/WebCloud.git html
 fi
 
+# THE END !
