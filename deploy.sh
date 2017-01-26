@@ -15,15 +15,15 @@ fi
 # Propose de renseigner l'utilisateur avec lequel on se connecte au serveur
 if [ "$2" = '' ]; then
     echo "Avec quel utilisateur voulez-vous vous connecter ? [ubuntu] : "
-    read USER
+    read USER_SSH
     # Par défaut, ce sera ubuntu
-    if [ "$USER" = '' ]; then
-        USER="ubuntu"
+    if [ "$USER_SSH" = '' ]; then
+        USER_SSH="ubuntu"
     fi
 else
-    USER=$2
+    USER_SSH=$2
 fi
-tail -n +28 "$0" | ssh $USER@$IP; exit;
+tail -n +28 "$0" | ssh $USER_SSH@$IP; exit;
 
 ### Commandes SSH ###
 
@@ -43,14 +43,16 @@ sudo apt-get upgrade -y > ~/latest-upgrade.log
 echo " ### apt-get install nginx"
 sudo apt-get install nginx  -y > /dev/null
 
-# Installation d'outils utiles, htop et git
-echo " ### apt-get install htop git"
-sudo apt-get install htop git  -y > /dev/null
+# Installation de git
+echo " ### apt-get install git"
+sudo apt-get install git  -y > /dev/null
 
 # Installation de php 7
 sudo apt-get install php7.0 php-fpm -y > /dev/null
 
 # Mise en place de la configuration Nginx
+sudo touch /etc/nginx/sites-available/webcloud
+
 sudo echo "server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -72,11 +74,7 @@ sudo echo "server {
     location ~ /\.ht {
         deny all;
     }
-}" > /etc/nginx/sites-available/webcloud
-
-# Déplacement de la configuration Nginx au bon endroit
-#sudo mv ~/nginx-configuration.txt /etc/nginx/sites-available/webcloud
-
+}" | sudo tee /etc/nginx/sites-available/webcloud > /dev/null
 # Activation de cette configuration
 sudo ln -f /etc/nginx/sites-available/webcloud /etc/nginx/sites-enabled
 
