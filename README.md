@@ -30,3 +30,15 @@ _/var/www/html_.
 
 Enfin, il vérifiera si le dépôt existe ou non dans le dossier _/var/www/html_.
 Il le créera ou le mettra à jour dans un cas ou l'autre.
+
+### Options
+
+Le programme supporte deux paramètres facultatifs,respectivement :
+- L'adresse du serveur
+- Le nom d'utilisateur
+
+_./deploy.sh [IP SERVER] [USERNAME]_
+
+Par défaut:
+
+_./deploy.sh 35.157.32.132 ubuntu_
