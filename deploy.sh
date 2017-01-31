@@ -2,7 +2,7 @@
 
 # Propose de renseigner l'adresse IP du serveur
 if [ "$1" = '' ]; then
-    echo "Quelle est l'adresse IP de votre serveur ? [35.157.32.132] : "
+    echo "Quelle est l'adresse IP de votre serveur ? [ex: 35.157.32.132] : "
     read IP
     # Par défaut, ce sera 35.157.32.132
     if [ "$IP" = '' ]; then
@@ -14,6 +14,8 @@ else
 fi
 
 # Propose de renseigner l'utilisateur avec lequel on se connecte au serveur
+# bzg: éventuellement vérifier que USER_SSH n'est pas une déjà une variable
+# d'environnement.
 if [ "$2" = '' ]; then
     echo "Avec quel utilisateur voulez-vous vous connecter ? [ubuntu] : "
     read USER_SSH
@@ -26,7 +28,7 @@ else
     USER_SSH=$2
 fi
 
-# tail -n +34 "deploy.sh" -> Lit ce même fichier à partir de la ligne 30
+# tail -n +34 "deploy.sh" -> Lit ce même fichier à partir de la ligne 34
 # Puis l'envoie en pipe dans la connexion SSH
 # Et enfin quitte le script
 tail -n +34 "$0" | ssh $USER_SSH@$IP; exit;
@@ -42,6 +44,7 @@ echo "Vous êtes sur une machine $(uname)"
 # Met à jour le système
 echo " ### apt-get update"
 sudo apt-get update > ~/latest-update.log
+
 # Installe les mises à jour
 echo " ### apt-get upgrade"
 sudo apt-get upgrade -y > ~/latest-upgrade.log
@@ -64,6 +67,7 @@ sudo apt-get install php7.0 php-fpm -y > /dev/null
 sudo touch /etc/nginx/sites-available/webcloud
 
 # Pipe de la configuration de Nginx
+# bzg: expliquer pourquoi vous avez besoin de sudo ci-dessous
 sudo echo "server {
     listen 80 default_server;
     listen [::]:80 default_server;
